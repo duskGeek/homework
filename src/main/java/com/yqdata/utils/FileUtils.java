@@ -1,7 +1,6 @@
-package com.yqdata.bigdata.jsonHandle;
+package com.yqdata.utils;
 
 import java.io.*;
-import java.util.Calendar;
 
 /**
  * 文件工具类

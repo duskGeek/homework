@@ -1,8 +1,8 @@
 package com.yqdata.bigdata.jsonHandle;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yqdata.utils.FileUtils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Random;
 
