@@ -8,11 +8,14 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileAsBinaryOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 
 import java.io.IOException;
 
@@ -22,6 +25,10 @@ public class AccessLogDriver {
         try {
 
         Configuration configuration=new Configuration();
+        configuration.set("dfs.client.use.datanode.hostname","true");
+        configuration.set("dfs.replication","1");
+        configuration.set("dfs.block.size","134217728");
+
         Job job=job = Job.getInstance(configuration);
 
         job.setJarByClass(AccessLogDriver.class);
@@ -35,12 +42,18 @@ public class AccessLogDriver {
         job.setOutputValueClass(NullWritable.class);
 
         String intput="inputDir/accesslog.txt";
-        String output="output";
-
+        String output="hdfs://yqdata000:8020/json";
+        job.setOutputFormatClass(SequenceFileOutputFormat.class);
+        FileInputFormat.setMaxInputSplitSize(job,134217728);
+        FileInputFormat.setMinInputSplitSize(job,134217728);
         FileInputFormat.setInputPaths(job,new Path(intput));
         FileOutputFormat.setOutputPath(job,new Path(output));
 
+
         job.waitForCompletion(true);
+
+            Counter c=job.getCounters().findCounter("etl","totalCount");
+            System.out.println(c.getName()+c.getValue());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,7 +67,7 @@ class JsonMapper extends Mapper<LongWritable, Text,Text ,NullWritable> {
 
         if(value==null)
             return;
-
+        context.getCounter("etl","totalCount").increment(1);
         String[] log= value.toString().split("\t");
 
         String ip=log[1];

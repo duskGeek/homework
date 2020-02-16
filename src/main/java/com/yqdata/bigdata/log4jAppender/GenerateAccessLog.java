@@ -1,8 +1,12 @@
-package com.yqdata.bigdata.cdnAccess;
+package com.yqdata.bigdata.log4jAppender;
 
 import com.alibaba.fastjson.JSONObject;
-import com.yqdata.bigdata.jsonHandle.Traffic;
+import com.yqdata.bigdata.cdnAccess.AccessLog;
+import com.yqdata.bigdata.cdnAccess.GenerateIP;
+import com.yqdata.bigdata.cdnAccess.GenerateUserAgent;
 import com.yqdata.utils.FileUtils;
+import org.apache.log4j.Logger;
+import org.jboss.netty.logging.Log4JLoggerFactory;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -12,7 +16,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
+
 public class GenerateAccessLog {
+
+    private static Logger log4j=Logger.getLogger(GenerateAccessLog.class);
+
     static String[] phones=new String[]{"18698956893","18698958578","18698952258","18333452258","18333452547","13785742547","137857425854"};
     static String[] ips=new String[]{"120.197.40.4","120.196.100.82","120.196.100.99","10.18.32.99"};
 
@@ -38,14 +46,13 @@ public class GenerateAccessLog {
         return JSONObject.toJSONString(accessLog);
     }
 
-    public void generate() throws IOException {
+    public void generate() throws IOException, InterruptedException {
 
         Calendar cal=Calendar.getInstance();
         cal.set(Calendar.HOUR,0);
         cal.set(Calendar.MINUTE,0);
         cal.set(Calendar.SECOND,0);
 
-        FileUtils fileUtils=FileUtils.getWriteInstance("inputDir/accesslog.txt",false);
 
         for (int i=0;i<=1000000;i++){
             String time =this.getTime(i,cal);
@@ -62,11 +69,14 @@ public class GenerateAccessLog {
             String hitCache="MISS";
             String userAgent=GenerateUserAgent.getUserAgent(this.getRandom(131));
             String fileType="text/html";
-            fileUtils.writeFile(new AccessLog( time,  accessIp,  proxyIp,  responseTime,  referer,  method,
-                     url,  httpCode,  requestSize,  responseSize,  hitCache,
-                     userAgent,  fileType).toString());
+
+            log4j.info(new AccessLog( time,  accessIp,  proxyIp,  responseTime,  referer,  method,
+                    url,  httpCode,  requestSize,  responseSize,  hitCache,
+                    userAgent,  fileType).toString());
+
+            Thread.sleep(100);
         }
-        fileUtils.writeInstanceClean();
+
     }
 
 
@@ -78,10 +88,10 @@ public class GenerateAccessLog {
         return df.format(date);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
 
-        //GenerateAccessLog generateData=new GenerateAccessLog();
-        //generateData.generate();
+        GenerateAccessLog generateData=new GenerateAccessLog();
+        generateData.generate();
 
     }
 
