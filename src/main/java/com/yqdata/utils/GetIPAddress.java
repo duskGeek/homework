@@ -11,7 +11,8 @@ import java.lang.reflect.Method;
 
 public class GetIPAddress {
 
-    static String dbFile="src/main/resources/ip2region.db";
+    //static String dbFile="/home/hadoop/lib/ip2region.db";
+    static String dbFile=GetIPAddress.class.getClassLoader().getResource("ip2region.db").getFile();
 
     public static String search(String ip){
         return  search(ip,"");
@@ -19,6 +20,8 @@ public class GetIPAddress {
 
 
     public static String search(String ip,String searchType){
+
+        System.out.println("###############################dbFile地址："+dbFile);
 
         int algorithm = DbSearcher.BTREE_ALGORITHM;
         String algoName = "B-tree";
@@ -92,7 +95,8 @@ public class GetIPAddress {
     }
 
     public static void main(String[] args) {
-        System.out.println(GetIPAddress.search("210.34.200.158"));
+        System.out.println(GetIPAddress.dbFile);
+        System.out.println(GetIPAddress.search("139.205.220.39"));
     }
 
 
