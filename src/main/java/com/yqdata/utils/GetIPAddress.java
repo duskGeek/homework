@@ -21,8 +21,6 @@ public class GetIPAddress {
 
     public static String search(String ip,String searchType){
 
-        System.out.println("###############################dbFile地址："+dbFile);
-
         int algorithm = DbSearcher.BTREE_ALGORITHM;
         String algoName = "B-tree";
 

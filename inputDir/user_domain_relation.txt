@@ -1,0 +1,4 @@
+www.taobao.com	8888
+www.aliyun.com	9999
+www.baidu.com	7777
+www.qq.com	6666

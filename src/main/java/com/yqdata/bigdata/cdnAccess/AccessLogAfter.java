@@ -16,6 +16,7 @@ public class AccessLogAfter {
     private String country;
     private String prov;
     private String city;
+    private String networkOperator;
     private String year;
     private String day;
     private String month;
@@ -23,11 +24,13 @@ public class AccessLogAfter {
     private String domain;
     private String path;
     private String query;
+    private String userId;
+
 
     public AccessLogAfter(String accessIp, String proxyIp, int responseTime, String referer, String method,
                           String httpCode, String requestSize, String responseSize, String hitCache, String userAgent,
-                          String fileType, String country, String prov, String city, String year, String day,
-                          String month, String protocol, String domain, String path, String query) {
+                          String fileType, String country, String prov, String city,String networkOperator, String year, String day,
+                          String month, String protocol, String domain, String path, String query,String userId) {
         this.accessIp = accessIp;
         this.proxyIp = proxyIp;
         this.responseTime = responseTime;
@@ -42,6 +45,7 @@ public class AccessLogAfter {
         this.country = country;
         this.prov = prov;
         this.city = city;
+        this.networkOperator=networkOperator;
         this.year = year;
         this.day = day;
         this.month = month;
@@ -49,6 +53,7 @@ public class AccessLogAfter {
         this.domain = domain;
         this.path = path;
         this.query = query;
+        this.userId=userId;
     }
 
     public void setTime(String time) {
@@ -223,11 +228,27 @@ public class AccessLogAfter {
         this.query = query;
     }
 
+    public String getNetworkOperator() {
+        return networkOperator;
+    }
+
+    public void setNetworkOperator(String networkOperator) {
+        this.networkOperator = networkOperator;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return accessIp + '\t' + proxyIp+'\t'+responseTime +'\t'+referer+'\t'+
                 method+'\t'+httpCode+'\t'+requestSize+'\t'+responseSize+'\t'+ hitCache+'\t'+ userAgent+'\t'+
-                fileType+'\t'+ country+'\t'+ prov+'\t'+ city+'\t'+ year+'\t'+  month+'\t'+day+'\t'+
-                protocol+'\t'+ domain+'\t'+ path+'\t'+ query;
+                fileType+'\t'+ country+'\t'+ prov+'\t'+ city+'\t'+ networkOperator +'\t'+year+'\t'+  month+'\t'+day+'\t'+
+                protocol+'\t'+ domain+'\t'+ path+'\t'+ query+'\t'+userId;
     }
 }

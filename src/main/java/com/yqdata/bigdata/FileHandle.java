@@ -2,10 +2,7 @@ package com.yqdata.bigdata;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.LocatedFileStatus;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.RemoteIterator;
+import org.apache.hadoop.fs.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -100,4 +97,9 @@ public class FileHandle {
         fs.rename(srcPath,dstPath);
     }
 
+
+    public FSDataInputStream getFile(String path) throws IOException {
+        return fs.open(new Path(path));
+
+    }
 }

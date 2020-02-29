@@ -1,9 +1,7 @@
 package com.yqdata.bigdata.cdnAccess;
 
-import com.alibaba.fastjson.JSONObject;
-import com.yqdata.bigdata.jsonHandle.Traffic;
-import com.yqdata.bigdata.log4jAppender.GenerateAccessLog;
-import com.yqdata.utils.GetIPAddress;
+import com.yqdata.bigdata.FileHandle;
+import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -13,20 +11,17 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileAsBinaryOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.text.DateFormat;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.util.HashMap;
 
 public class AccessLogDriver extends Configured implements Tool {
 
@@ -62,10 +57,13 @@ public class AccessLogDriver extends Configured implements Tool {
             String output=args[1];
             //FileInputFormat.setMaxInputSplitSize(job,134217728);
             //FileInputFormat.setMinInputSplitSize(job,134217728);
+            job.addCacheFile(new URI("/hive/cache/user_domain_relation.txt"));
+           // job.addCacheFile(new URI("inputDir/user_domain_relation.txt"));
+
             FileInputFormat.setInputPaths(job,new Path(intput));
             FileOutputFormat.setOutputPath(job,new Path(output));
 
-             result=job.waitForCompletion(true);
+            result=job.waitForCompletion(true);
 
             Counter c=job.getCounters().findCounter("etl","totalCount");
             System.out.println(c.getName()+c.getValue());
@@ -87,6 +85,28 @@ public class AccessLogDriver extends Configured implements Tool {
 class JsonMapper extends Mapper<LongWritable, Text,Text ,NullWritable> {
     private static Logger log4j=Logger.getLogger(JsonMapper.class);
 
+    HashMap<String,String> userDomain=new HashMap<String,String>();
+
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
+        URI uri =context.getCacheFiles()[0];
+        FileHandle fileHandle;
+        try {
+            fileHandle=FileHandle.getInstance();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        BufferedReader bufferedReader= new BufferedReader(new InputStreamReader(fileHandle.getFile(uri.toString())));
+        String line="";
+        while(( line =bufferedReader.readLine())!=null){
+            String[] data=line.split("\t");
+            userDomain.put(data[0],data[1]);
+        }
+        bufferedReader.close();
+    }
+
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         if(value==null)
@@ -94,7 +114,7 @@ class JsonMapper extends Mapper<LongWritable, Text,Text ,NullWritable> {
         context.getCounter("etl","totalCount").increment(1);
 
         try {
-            context.write(new Text(LogParse.parse(value.toString()).toString()),NullWritable.get());
+            context.write(new Text(LogParse.parse(value.toString(),userDomain).toString()),NullWritable.get());
         } catch (ParseException e) {
             log4j.error("error text    "+value.toString());
             context.getCounter("etl","ErrorCount").increment(1);

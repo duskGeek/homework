@@ -15,6 +15,7 @@ import java.util.Random;
 public class GenerateAccessLog {
     static String[] phones=new String[]{"18698956893","18698958578","18698952258","18333452258","18333452547","13785742547","137857425854"};
     static String[] ips=new String[]{"120.197.40.4","120.196.100.82","120.196.100.99","10.18.32.99"};
+    static String[] domains=new String[]{"www.taobao.com","www.aliyun.com","www.baidu.com","www.qq.com"};
 
     //27.16.0.0	27.16.124.255
 
@@ -55,7 +56,7 @@ public class GenerateAccessLog {
             int responseTime=this.getRandom(10000);
             String referer="-";
             String method="GET";
-            String url="http://www.aliyun.com/index.html?id="+this.getRandom(100000);
+            String url="http://"+domains[getRandom(4)]+"/index.html?id="+this.getRandom(100000);
             String httpCode="200";
             String requestSize=this.getRandom(2000)+"";
             String responseSize=this.getRandom(20000)+"";
@@ -80,8 +81,8 @@ public class GenerateAccessLog {
 
     public static void main(String[] args) throws IOException {
 
-        //GenerateAccessLog generateData=new GenerateAccessLog();
-        //generateData.generate();
+        GenerateAccessLog generateData=new GenerateAccessLog();
+        generateData.generate();
 
     }
 

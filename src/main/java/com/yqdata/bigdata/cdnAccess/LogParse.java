@@ -5,16 +5,13 @@ import com.yqdata.utils.GetIPAddress;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class LogParse {
     static DateFormat df=new SimpleDateFormat("[d/MMM/yyyy:HH:mm:ss Z]", Locale.UK);
     static Calendar calendar=Calendar.getInstance();
 
-    public static AccessLogAfter parse(String text) throws ParseException {
+    public static AccessLogAfter parse(String text, HashMap<String,String> userDomain) throws ParseException {
         String[] log= text.toString().split("\t");
         String time=log[0];
         String ip=log[1];
@@ -34,6 +31,7 @@ public class LogParse {
         String country="";
         String prov="";
         String city="";
+        String networkOperator="";
         String year="";
         String day="";
         String month="";
@@ -54,6 +52,7 @@ public class LogParse {
                 country=adress[0];
                 prov=adress[2];
                 city=adress[3];
+                networkOperator=adress[4];
             }
         }
 
@@ -63,10 +62,12 @@ public class LogParse {
         String path=urlArray[2];
         String query=urlArray[3];
 
+        String userId=userDomain.get(domain);
+
         return new AccessLogAfter(ip,  proxyIp,  Integer.parseInt(responseTime),  referer,  method,httpCode,
                 requestSize,  responseSize,  hitCache,  userAgent,
-                fileType,  country,  prov,  city,  year,  day,
-                month,  protocol,  domain,  path,  query);
+                fileType,  country,  prov,  city, networkOperator , year,  day,
+                month,  protocol,  domain,  path,  query,userId);
     }
 
 
@@ -99,7 +100,7 @@ public class LogParse {
     public static void main(String[] args) throws ParseException {
         System.out.printf(parse("[11/Feb/2020:00:00:01 +0800]\t123.234.24.250\t-\t6268\t-\tGET\thttp://www.aliyun." +
                 "com/index.html?id=63589\t200\t591\t15672\tMISS\tMozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 " +
-                "(KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36\ttext/html\t\n").toString());
+                "(KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36\ttext/html\t\n",null).toString());
     }
 
 }
