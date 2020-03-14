@@ -29,17 +29,17 @@ public class azCuratorTest {
         client.create().creatingParentContainersIfNeeded().
                 withMode(CreateMode.PERSISTENT).
                 withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE).
-                forPath("/lock","78".getBytes());
+                forPath("/","78".getBytes());
     }
 
     @Test
     public void deletNode() throws Exception {
-        client.delete().inBackground().forPath("/first/createnode");
+        client.delete().inBackground().forPath("/second");
     }
 
     @Test
     public void setNode() throws Exception {
-        client.setData().inBackground().forPath("/first/createnode","99".getBytes());
+        client.setData().inBackground().forPath("/second","99".getBytes());
     }
 
     @Test
