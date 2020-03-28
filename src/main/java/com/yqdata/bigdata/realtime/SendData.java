@@ -23,7 +23,7 @@ public class SendData {
 
     public static void main(String[] args) {
         try {
-            SendData.generateLogs("http://yqdata000:10088");
+            SendData.generateLogs("http://yqdata000:10087");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

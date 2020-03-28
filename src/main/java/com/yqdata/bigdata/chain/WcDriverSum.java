@@ -14,6 +14,8 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class WcDriverSum {
 
@@ -79,6 +81,9 @@ class WcMapperSum extends Mapper<LongWritable, Text,Text,IntWritable> {
         if(array==null||array.length<=0){
             return ;
         }
+
+        Set s=new HashSet<String>();
+
         context.write(new Text(KeyHandle.demystify(array[0])),new IntWritable(Integer.parseInt(array[1])));
     }
 
