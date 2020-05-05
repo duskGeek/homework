@@ -4,7 +4,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -102,4 +105,16 @@ public class FileHandle {
         return fs.open(new Path(path));
 
     }
+
+    public void writeFile(String path,String context) throws IOException {
+        FSDataOutputStream fsout=fs.create(new Path(path),true);
+        BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(fsout));
+        bw.write(context);
+        bw.newLine();
+        bw.close();
+        fsout.close();
+    }
+
+
+
 }
